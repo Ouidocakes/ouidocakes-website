@@ -703,9 +703,9 @@ const vh=Math.min(innerHeight,screen.availHeight||innerHeight,1400)/100;document
 /* ---- hero: logo draws itself with scroll ---- */
 const hero=$('#top'), wrap=$('#logoWrap'), nav=$('#nav');
 const parts={ring:$('#dRing'),cake:$('#dCake'),script:$('#dScript'),cakes:$('#dCakes')};
-Object.values(parts).forEach(u=>{u.setAttribute('stroke-dasharray','1.002 1.002')});
+const L={};for(const [k,u] of Object.entries(parts)){let len=0;try{const src=document.querySelector(u.getAttribute('href'));src.removeAttribute('pathLength');len=src.getTotalLength()}catch(e){}L[k]=len>1?len:1;u.setAttribute('stroke-dasharray',`${L[k]*1.002} ${L[k]*1.002}`)}
 const cue=$('#cue'), ringSpin=$('#ringSpin');
-function setPart(u,draw,fill){u.style.strokeDashoffset=(1-draw).toFixed(4);u.style.fillOpacity=fill.toFixed(3);u.style.strokeOpacity=(draw>0?1-fill*.85:0).toFixed(3)}
+function setPart(u,draw,fill){const k=Object.keys(parts).find(x=>parts[x]===u);u.style.strokeDashoffset=(L[k]*(1-draw)).toFixed(2);u.style.fillOpacity=fill.toFixed(3);u.style.strokeOpacity=(draw>0?1-fill*.85:0).toFixed(3)}
 let intro=0;
 function heroRender(p){
   setPart(parts.ring,ease(Math.max(intro,seg(p,0,.14))),0);
@@ -894,7 +894,13 @@ if(matchMedia('(pointer: fine)').matches&&!reduce){
   .lb-ctl button{width:52px;height:52px}
 }
 @media (hover:none){
-  .maker .portrait img{filter:grayscale(.15)}
+  .maker .portrait img{filter:grayscale(.15)}}
+@supports (overflow:clip){html,body{overflow-x:clip}}
+#studio{margin-top:calc(var(--vh,1vh)*-16);background:var(--paper);z-index:2}
+#studio::before{content:"";position:absolute;left:0;right:0;bottom:100%;height:calc(var(--vh,1vh)*14);background:linear-gradient(to top,var(--paper),transparent);pointer-events:none}
+@media (max-width:640px){#studio{padding-top:40px}}
+@media (prefers-reduced-motion:reduce){#studio{margin-top:0}#studio::before{display:none}}
+@media (hover:none){
 }
 </style>
 </body>
